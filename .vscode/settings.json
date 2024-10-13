@@ -1,0 +1,16 @@
+{
+  "editor.tabSize": 2,
+
+  "files.associations": {
+    "**/scenarios.json": "jsonc"
+  },
+
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "**/devcontainer-feature.json"
+      ],
+      "url": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainerFeature.schema.json"
+    }
+  ]
+}

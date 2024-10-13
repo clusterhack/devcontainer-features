@@ -1,0 +1,36 @@
+{
+  "agnoster": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "ohmyzsh-custom": {
+        "theme": "agnoster",
+        "extraAgnosterCustomizations": ".devcontainer/agnoster-custom.zsh"
+      }
+    }
+  },
+  "fzf": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "ohmyzsh-custom": {
+        "plugins": "fzf"
+      }
+    }
+  },
+  "colorize": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "ohmyzsh-custom": {
+        "plugins": "colorize"
+      }
+    }
+  },
+  "aliases": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "ohmyzsh-custom": {
+        "extraAliases": ".devcontainer/aliases-custom.zsh"
+      }
+    }
+  }
+  // TODO: p10k
+}

@@ -1,0 +1,51 @@
+{
+  "name": "Oh My Zsh Customization",
+  "id": "ohmyzsh-custom",
+  "version": "1.0.0",
+  "description": "Set up and configure common Oh My Zsh plugins and theme(s)",
+  "options": {
+    "plugins": {
+      "type": "string",
+      "default": "git virtualenv zsh-autosuggestions per-directory-history",
+      "description": "Space-separated list of plugins to install and enable; see documentation for supported plugins."
+    },
+    "theme": {
+      "type": "string",
+      "proposals": [ "p10k", "agnoster" ],
+      "default": "p10k",
+      "description": "Theme to select, installing if necessary"
+    },
+    "disableAutoupdate": {
+      "type": "boolean",
+      "default": true,
+      "description": "Disable Oh My Zsh auto-update check"
+    },
+    "installAliases": {
+      "type": "boolean",
+      "default": true,
+      "description": "Install alias presets"
+    },
+    "extraAliases": {
+      "type": "string",
+      "default": "",
+      "description": "File with extra alias definitions; relative to repo root"
+    },
+    "extraPowerlevel10kCustomizations": {
+      "type": "string",
+      "default": "",
+      "description": "File with extra Powerlevel10k customizations; relative to repo root"
+    },
+    "extraAgnosterCustomizations": {
+      "type": "string",
+      "default": "",
+      "description": "File with extra Agnoster customizations; relative to repo root"
+    }
+  },
+  "dependsOn": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ],
+  "updateContentCommand": "/usr/local/bin/ohmyzsh-setup.sh"
+}
