@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-set -x  # DBG
-
 export DEBIAN_FRONTEND=noninteractive
 
 goplatform_guess() {
@@ -13,7 +11,7 @@ goplatform_guess() {
 }
 
 # KNOWN_THEMES=(p10k agnoster)
-# KNOWN_PLUGINS=(fzf fzf-tab virtualenv git per-directory-history colorize)
+# KNOWN_PLUGINS=(fzf fzf-tab virtualenv git per-directory-history colorize zsh-syntax-highlighting)
 FZF_VARIANT=${FZF_VARIANT:-$(goplatform_guess)}
 FZF_VERSION=${FZF_VERSION:-latest}  # TODO? Make feature parameter
 FZF_INSTALL_ROOT=${FZF_INSTALL_ROOT:-/usr/local/bin}
@@ -21,18 +19,6 @@ FZF_INSTALL_ROOT=${FZF_INSTALL_ROOT:-/usr/local/bin}
 FEATURE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # For copying files
 
 SETUPSCRIPT=/usr/local/bin/ohmyzsh-setup.sh  # For lifecycle hook
-
-is_plugin_selected() {
-  local query="$1"
-  shift
-  local list="${*:-$PLUGINS}"
-  echo "$list" | sed 's/-/_/g' | grep -q "\b$query\b"
-}
-
-# is_plugin_known() {
-#   local query="$1"
-#   # TODO
-# }
 
 die() {
   echo -e "$@"
@@ -50,7 +36,6 @@ append_user_zshrc() {
   # $1 snippet src relative to feature directory
   cat "${FEATURE_DIR}/$1" >> "${USER_HOME}/.zshrc"
 }
-
 
 setup_replace_in_user_file() {
   local tag=$1       # Placeholder tag in file; indentation will be matched
@@ -103,6 +88,22 @@ INSTALL_ALIASES="${INSTALLALIASES:-true}"
 EXTRA_ALIASES="${EXTRAALIASES:-}"
 EXTRA_P10K_CUSTOMIZATIONS="${EXTRAPOWERLEVEL10KCUSTOMIZATIONS:-}"
 EXTRA_AGNOSTER_CUSTOMIZATIONS="${EXTRAAGNOSTERCUSTOMIZATIONS:-}"
+
+
+is_plugin_selected() {
+  local query=$1
+
+  for p in "${ZSHRC_PLUGINS[@]}"; do
+    [[ $p == "$query" ]] && return 0
+  done
+  return 1
+}
+
+# is_plugin_known() {
+#   local query="$1"
+#   # TODO
+# }
+
 
 # Write rcfile setup script (called by devcontainer lifecycle hooks)
 tee "$SETUPSCRIPT" >/dev/null <<"EOF"
@@ -176,8 +177,8 @@ expand_file() {
   local indent_prefix indented_tag
   indent_prefix=$(grep -E -o '^[[:blank:]]*' <<<"${tagline}")
   indented_tag="${indent_prefix}${tag}"
-  local subtxt_escaped
-  subtxt_escaped=$(sed 's|^|'"${indent_prefix}"'|' "${subfile}" | awk -v ORS='\\n' '1')
+  local subtxt_escaped  # ..and indented (first)
+  subtxt_escaped=$(sed 's|^|'"${indent_prefix}"'|;s|\\|\\\\|g' "${subfile}" | awk -v ORS='\\n' '1')
   subtxt_escaped="${subtxt_escaped%%+(\\n)}\n"  # Ensure value ends with single '\n'
   sed -i -E 's|^[[:blank:]]*'"${tag}"'|'"${indented_tag} - BEGIN\n${subtxt_escaped}${indented_tag} - END"'|g' "${dstfile}"
 }
@@ -249,6 +250,15 @@ fi
 if is_plugin_selected zsh-autosuggestions; then
   echo 'Installing zsh-autosuggestions (GitHub source)'
   git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
+fi
+
+# Install zsh-syntax-highlighting
+if is_plugin_selected zsh-syntax-highlighting; then
+  echo 'Installing zsh-syntax-highlighting (GitHub source)'
+  git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
+  # Ensure it's the last plugin (assumes no spaces in any ZSHRC_PLUGINS element)
+  IFS=' ' read -ra ZSHRC_PLUGINS <<<"${ZSHRC_PLUGINS[@]/zsh-syntax-highlighting}"  # Remove first...
+  ZSHRC_PLUGINS+=( zsh-syntax-highlighting )  # ...then append
 fi
 
 if [[ $INSTALL_ALIASES == true ]]; then
